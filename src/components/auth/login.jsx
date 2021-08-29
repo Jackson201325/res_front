@@ -8,7 +8,6 @@ export default function Registration() {
     message: "",
     variant: "error",
   });
-
   const {
     isOpen: isSnackbarOpen,
     open: openSnackbar,
@@ -16,25 +15,24 @@ export default function Registration() {
   } = useSnackbar();
   const handleSuccesfullAuth = (data) => {
     setSnackbarState({
-      message: "User was created succesfully",
+      message: "Logged in successfully",
       variant: "success",
     });
-    console.log(data);
     openSnackbar();
   };
   const handleUnsuccessfullAuth = (data) => {
+    console.log({ data });
     setSnackbarState({
       message: data.errors.length > 0 ? data.errors.join(",") : data.errors[0],
       variant: "error",
     });
-    console.log(data);
     openSnackbar();
   };
   return (
     <div>
-      <h1>Register</h1>
+      <h1>Login</h1>
       <Formik
-        initialValues={{ email: "", password: "", password_confirmation: "" }}
+        initialValues={{ email: "", password: "" }}
         validate={(values) => {
           const errors = {};
           if (!values.email) {
@@ -47,16 +45,13 @@ export default function Registration() {
           if (!values.password) {
             errors.password = "Required";
           }
-          if (!values.password_confirmation) {
-            errors.password_confirmation = "Required";
-          }
           return errors;
         }}
         onSubmit={(values, { setSubmitting }) => {
           setSubmitting(true);
           axios
             .post(
-              "http://localhost:3000/registrations",
+              "http://localhost:3000/sessions",
               {
                 user: values,
               },
@@ -70,7 +65,7 @@ export default function Registration() {
               }
             })
             .catch((response) => {
-              console.log("registration error", response);
+              console.log("Login error", response);
             });
           setSubmitting(false);
         }}
@@ -83,7 +78,6 @@ export default function Registration() {
           handleBlur,
           handleSubmit,
           isSubmitting,
-          /* and other goodies */
         }) => (
           <form onSubmit={handleSubmit}>
             <input
@@ -102,16 +96,6 @@ export default function Registration() {
               value={values.password}
             />
             {errors.password && touched.password && errors.password}
-            <input
-              type="password"
-              name="password_confirmation"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.password_confirmation}
-            />
-            {errors.password_confirmation &&
-              touched.password_confirmation &&
-              errors.password_confirmation}
             <button type="submit" disabled={isSubmitting}>
               Submit
             </button>
