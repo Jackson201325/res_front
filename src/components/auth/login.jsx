@@ -1,9 +1,14 @@
 import React from "react";
 import { Formik } from "formik";
 import { Snackbar, useSnackbar } from "../snackbar";
+import { useDispatch } from "react-redux";
+import { userActions } from "../redux/actions/user";
+import { Button } from "@material-ui/core";
 import axios from "axios";
 
-export default function Registration() {
+export default function Login() {
+  const dispatch = useDispatch();
+
   const [snackbarState, setSnackbarState] = React.useState({
     message: "",
     variant: "error",
@@ -13,7 +18,8 @@ export default function Registration() {
     open: openSnackbar,
     close: closeSnackbar,
   } = useSnackbar();
-  const handleSuccesfullAuth = (data) => {
+
+  const handleSuccesfullAuth = () => {
     setSnackbarState({
       message: "Logged in successfully",
       variant: "success",
@@ -21,13 +27,24 @@ export default function Registration() {
     openSnackbar();
   };
   const handleUnsuccessfullAuth = (data) => {
-    console.log({ data });
     setSnackbarState({
       message: data.errors.length > 0 ? data.errors.join(",") : data.errors[0],
       variant: "error",
     });
     openSnackbar();
   };
+
+  const loggedIn = () => {
+    axios
+      .get("http://localhost:3000/logged_in", { withCredentials: true })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   return (
     <div>
       <h1>Login</h1>
@@ -49,14 +66,7 @@ export default function Registration() {
         }}
         onSubmit={(values, { setSubmitting }) => {
           setSubmitting(true);
-          axios
-            .post(
-              "http://localhost:3000/sessions",
-              {
-                user: values,
-              },
-              { credential: true }
-            )
+          dispatch(userActions.login(values))
             .then((response) => {
               if (response.data.status === "created") {
                 handleSuccesfullAuth(response.data);
@@ -96,12 +106,13 @@ export default function Registration() {
               value={values.password}
             />
             {errors.password && touched.password && errors.password}
-            <button type="submit" disabled={isSubmitting}>
+            <button type="submit" disabled={false}>
               Submit
             </button>
           </form>
         )}
       </Formik>
+      <Button onClick={() => loggedIn()}>Logged In</Button>
       <Snackbar
         isOpen={isSnackbarOpen}
         message={snackbarState.message}

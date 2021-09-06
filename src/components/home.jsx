@@ -7,7 +7,7 @@ import { Button } from "@material-ui/core";
 export default function Home() {
   const handleLogout = () => {
     axios
-      .delete("http://localhost:3000/logout", { withCredential: true })
+      .delete("http://localhost:3000/logout", { withCredentials: true })
       .then((response) => {
         console.log(response);
       })

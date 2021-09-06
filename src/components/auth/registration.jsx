@@ -1,9 +1,12 @@
 import React from "react";
 import { Formik } from "formik";
+import { useDispatch } from "react-redux";
 import { Snackbar, useSnackbar } from "../snackbar";
 import axios from "axios";
 
 export default function Registration() {
+  const dispatch = useDispatch();
+
   const [snackbarState, setSnackbarState] = React.useState({
     message: "",
     variant: "error",
